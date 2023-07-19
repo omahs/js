@@ -28,9 +28,11 @@ import fetch, { Response } from "cross-fetch";
  */
 export class StorageDownloader implements IStorageDownloader {
   private secretKey?: string;
+  private clientId?: string;
 
   constructor(options: IpfsDownloaderOptions) {
     this.secretKey = options.secretKey;
+    this.clientId = options.clientId;
   }
 
   async download(
@@ -52,7 +54,7 @@ export class StorageDownloader implements IStorageDownloader {
     }
 
     // Replace recognized scheme with the highest priority gateway URL that hasn't already been attempted
-    const resolvedUri = replaceSchemeWithGatewayUrl(uri, gatewayUrls, attempts);
+    let resolvedUri = replaceSchemeWithGatewayUrl(uri, gatewayUrls, attempts);
     // If every gateway URL we know about for the designated scheme has been tried (via recursion) and failed, throw an error
     if (!resolvedUri) {
       console.error(
@@ -68,16 +70,28 @@ export class StorageDownloader implements IStorageDownloader {
       console.warn(`Retrying download with backup gateway URL: ${resolvedUri}`);
     }
 
+    let headers;
+    if (isTwGatewayUrl(resolvedUri)) {
+      if (this.secretKey) {
+        headers = { "x-secret-key": this.secretKey };
+      } else if (this.clientId) {
+        if (
+          typeof globalThis !== "undefined" &&
+          "APP_BUNDLE_ID" in globalThis
+        ) {
+          // @ts-ignore
+          resolvedUri = resolvedUri + `?bundleId=${globalThis.APP_BUNDLE_ID}`;
+        }
+        headers = {
+          "x-client-Id": this.clientId,
+        };
+      }
+    }
+
     if (isTooManyRequests(resolvedUri)) {
       // skip the request if we're getting too many request error from the gateway
       return this.download(uri, gatewayUrls, attempts + 1);
     }
-
-    // @joaquim I don't think we want to include secret key in the headers unless it's a thirdweb domain (checking it with isTwGatewayUrl)
-    const headers =
-      this.secretKey && isTwGatewayUrl(resolvedUri)
-        ? { "x-secret-key": this.secretKey }
-        : undefined;
 
     const controller = new AbortController();
     let timeout = setTimeout(() => controller.abort(), 5000);

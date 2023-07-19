@@ -111,6 +111,7 @@ import {
 import { fetchContractMetadataFromAddress } from "../common/metadata-resolver";
 import { LoyaltyCardContractDeploy } from "../schema/contracts/loyalty-card";
 import { getDefaultTrustedForwarders } from "../constants";
+import { checkClientIdOrSecretKey } from "../../core/utils/apiKey";
 
 /**
  * The main entry point for the thirdweb SDK
@@ -260,6 +261,13 @@ export class ThirdwebSDK extends RPCConnectionHandler {
     options: SDKOptions = {},
     storage?: IThirdwebStorage,
   ) {
+    const apiKeyType = typeof window !== "undefined" ? "clientId" : "secretKey";
+    checkClientIdOrSecretKey(
+      `No ${apiKeyType} provided in ThirdwebSDK. You will have limited access to thirdweb's services for storage, RPC, and account abstraction. You can get a ${apiKeyType} from https://thirdweb.com/create-api-key`,
+      options.clientId,
+      options.secretKey,
+    );
+
     if (isChainConfig(network)) {
       options = {
         ...options,
@@ -278,7 +286,7 @@ export class ThirdwebSDK extends RPCConnectionHandler {
     this.storage = configuredStorage;
     this.storageHandler = configuredStorage;
 
-    this.wallet = new UserWallet(network, options);
+    this.wallet = new UserWallet(network, options, configuredStorage);
     this.deployer = new ContractDeployer(network, options, configuredStorage);
     this.verifier = new ContractVerifier(network, options, configuredStorage);
     this.multiChainRegistry = new MultichainRegistry(

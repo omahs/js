@@ -1,19 +1,13 @@
+import { Chain, defaultChains, getValidChainRPCs } from "@thirdweb-dev/chains";
+import { checkClientIdOrSecretKey } from "@thirdweb-dev/sdk";
+import { SDKOptionsOutput, ThirdwebSDK } from "@thirdweb-dev/sdk/evm";
+import { useEffect, useMemo } from "react";
 import { QueryClientProviderWithDefault } from "../../core/providers/query-client";
 import { ThirdwebConfigProvider } from "../contexts/thirdweb-config";
+import { ThirdwebSDKContext } from "../contexts/thirdweb-sdk";
 import { ThirdwebConnectedWalletProvider } from "../contexts/thirdweb-wallet";
 import { useUpdateChainsWithClientId } from "../hooks/chain-hooks";
 import { ThirdwebSDKProviderProps } from "./types";
-import { Chain, defaultChains, getValidChainRPCs } from "@thirdweb-dev/chains";
-import { SDKOptionsOutput, ThirdwebSDK } from "@thirdweb-dev/sdk/evm";
-import { createContext, useContext, useEffect, useMemo } from "react";
-import invariant from "tiny-invariant";
-
-interface TWSDKContext {
-  sdk?: ThirdwebSDK;
-  _inProvider?: true;
-}
-
-const ThirdwebSDKContext = /* @__PURE__ */ createContext<TWSDKContext>({});
 
 /**
  *
@@ -168,7 +162,11 @@ export const ThirdwebSDKProvider = <TChains extends Chain[]>({
   ...restProps
 }: React.PropsWithChildren<ThirdwebSDKProviderProps<TChains>>) => {
   if (!clientId) {
-    noClientIdWarning();
+    checkClientIdOrSecretKey(
+      "No clientId provided in ThirdwebSDK. You will have limited access to thirdweb's services for storage, RPC, and account abstraction. You can get a clientId from https://thirdweb.com/create-api-key",
+      clientId,
+      undefined,
+    );
   }
   const supportedChainsNonNull = useMemo(() => {
     return supportedChains || (defaultChains as any as TChains);
@@ -209,65 +207,19 @@ export const ThirdwebSDKProvider = <TChains extends Chain[]>({
         clientId,
       }}
     >
-      <ThirdwebConnectedWalletProvider signer={signer}>
-        <QueryClientProviderWithDefault queryClient={queryClient}>
-          <WrappedThirdwebSDKProvider
-            signer={signer}
-            supportedChains={mergedChains}
-            clientId={clientId}
-            activeChain={activeChainIdOrObjWithKey}
-            {...restProps}
-          >
+      <QueryClientProviderWithDefault queryClient={queryClient}>
+        <WrappedThirdwebSDKProvider
+          signer={signer}
+          supportedChains={mergedChains}
+          clientId={clientId}
+          activeChain={activeChainIdOrObjWithKey}
+          {...restProps}
+        >
+          <ThirdwebConnectedWalletProvider signer={signer}>
             {children}
-          </WrappedThirdwebSDKProvider>
-        </QueryClientProviderWithDefault>
-      </ThirdwebConnectedWalletProvider>
+          </ThirdwebConnectedWalletProvider>
+        </WrappedThirdwebSDKProvider>
+      </QueryClientProviderWithDefault>
     </ThirdwebConfigProvider>
   );
 };
-
-/**
- * @internal
- */
-function useSDKContext(): TWSDKContext {
-  const ctx = useContext(ThirdwebSDKContext);
-  invariant(
-    ctx._inProvider,
-    "useSDK must be called from within a ThirdwebProvider, did you forget to wrap your app in a <ThirdwebProvider />?",
-  );
-  return ctx;
-}
-
-/**
- *
- * @returns {@link ThirdwebSDK}
- * Access the instance of the thirdweb SDK created by the ThirdwebProvider
- * to call methods using the connected wallet on the desiredChainId.
- * @example
- * ```javascript
- * const sdk = useSDK();
- * ```
- */
-export function useSDK(): ThirdwebSDK | undefined {
-  const { sdk } = useSDKContext();
-  return sdk;
-}
-
-/**
- * @internal
- */
-export function useSDKChainId(): number | undefined {
-  const sdk = useSDK();
-  return (sdk as any)?._chainId;
-}
-
-let noClientIdWarningLogged = false;
-function noClientIdWarning() {
-  if (noClientIdWarningLogged) {
-    return;
-  }
-  noClientIdWarningLogged = true;
-  console.warn(
-    "No clientId provided to <ThirdwebSDKProvider />. You will have limited access to thirdweb's services for storage, RPC, and account abstraction. You can get a client id from https://thirdweb.com/dashboard/",
-  );
-}

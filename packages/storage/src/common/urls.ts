@@ -1,7 +1,10 @@
 import { GatewayUrls } from "../types";
 import CIDTool from "cid-tool";
 
-const TW_GATEWAY_URLS = ["https://{clientId}.ipfscdn.io/ipfs/{cid}/{path}"];
+const TW_HOSTNAME_SUFFIX = ".ipfscdn.io";
+const TW_GATEWAY_URLS = [
+  `https://{clientId}${TW_HOSTNAME_SUFFIX}/ipfs/{cid}/{path}`,
+];
 
 /**
  * @internal
@@ -9,12 +12,7 @@ const TW_GATEWAY_URLS = ["https://{clientId}.ipfscdn.io/ipfs/{cid}/{path}"];
  * @returns
  */
 export function isTwGatewayUrl(url: string): boolean {
-  return TW_GATEWAY_URLS.some((gatewayUrl) => {
-    const parts = gatewayUrl.split("/")[0].split(".");
-    const domain =
-      "." + parts[parts.length - 2] + "." + parts[parts.length - 1];
-    return new URL(url).hostname.endsWith(domain);
-  });
+  return new URL(url).hostname.endsWith(TW_HOSTNAME_SUFFIX);
 }
 
 const PUBLIC_GATEWAY_URLS = [

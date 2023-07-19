@@ -1,7 +1,8 @@
-import { PaymasterAPI } from "@account-abstraction/sdk";
 import { UserOperationStruct } from "@account-abstraction/contracts";
-import { toJSON } from "./utils";
+import { PaymasterAPI } from "@account-abstraction/sdk";
 import fetch from "cross-fetch";
+import { isTwUrl } from "../../../utils/url";
+import { toJSON } from "./utils";
 
 export const SIG_SIZE = 65;
 export const DUMMY_PAYMASTER_AND_DATA =
@@ -32,16 +33,26 @@ class VerifyingPaymasterAPI extends PaymasterAPI {
       "Content-Type": "application/json",
     };
 
-    if (this.secretKey && this.clientId) {
-      throw new Error(
-        "Cannot use both secret key and client ID. Please use secretKey for server-side applications and clientId for client-side applications.",
-      );
-    }
+    if (isTwUrl(this.paymasterUrl)) {
+      if (this.secretKey && this.clientId) {
+        throw new Error(
+          "Cannot use both secret key and client ID. Please use secretKey for server-side applications and clientId for client-side applications.",
+        );
+      }
 
-    if (this.secretKey) {
-      headers["x-secret-key"] = this.secretKey;
-    } else if (this.clientId) {
-      headers["x-client-id"] = this.clientId;
+      if (this.secretKey) {
+        headers["x-secret-key"] = this.secretKey;
+      } else if (this.clientId) {
+        headers["x-client-id"] = this.clientId;
+
+        if (
+          typeof globalThis !== "undefined" &&
+          "APP_BUNDLE_ID" in globalThis
+        ) {
+          // @ts-ignore
+          headers["x-bundle-id"] = globalThis.APP_BUNDLE_ID;
+        }
+      }
     }
 
     // Ask the paymaster to sign the transaction and return a valid paymasterAndData value.

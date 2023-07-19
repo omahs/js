@@ -31,7 +31,7 @@ import { IpfsUploader } from "./uploaders/ipfs-uploader";
  * // Create a default storage class with a secret key when used in server-side applications
  * const storage = new ThirdwebStorage({ secretKey: "your-secret-key" });
  *
- * You can get a clientId and secretKey from https://thirdweb.com/dashboard/settings/api-keys
+ * You can get a clientId and secretKey from https://thirdweb.com/create-api-key
  *
  * // Upload any file or JSON object
  * const uri = await storage.upload(data);
@@ -72,6 +72,7 @@ export class ThirdwebStorage<T extends UploadOptions = IpfsUploadBatchOptions>
       options?.downloader ||
       new StorageDownloader({
         secretKey: options?.secretKey,
+        clientId: options?.clientId,
       });
     this.gatewayUrls = prepareGatewayUrls(
       parseGatewayUrls(options?.gatewayUrls),

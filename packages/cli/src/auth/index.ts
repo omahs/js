@@ -1,12 +1,6 @@
-import assert from "assert";
 import chalk from "chalk";
-import http from "http";
-import open from "open";
-import ora from "ora";
 import prompts from "prompts";
 import Cache, { CacheEntry } from "sync-disk-cache";
-import url from "url";
-import { logger } from "../core/helpers/logger";
 import { ApiResponse } from "../lib/types";
 
 export async function loginUser(
@@ -21,19 +15,7 @@ export async function loginUser(
     }
     return keyFound;
   } else {
-    // const apiKey = await createSession(cache);
-    // return apiKey;
-    if (showLogs) {
-      console.log(
-        chalk.yellow(
-          "We did not find a session, please connect your wallet through our dashboard to continue",
-        ),
-      );
-    }
-    const apiKey = await startServer({ browser: true }, cache);
-    if (!apiKey) {
-      throw new Error("Failed to login");
-    }
+    const apiKey = await createSession(cache);
     return apiKey;
   }
 }
@@ -62,7 +44,7 @@ export async function createSession(cache: Cache) {
       type: "text",
       name: "apiSecretKey",
       message: `Please enter your API secret key, you can find or create it on ${chalk.blue(
-        "https://thirdweb.com/dashboard/settings/api-keys",
+        "https://thirdweb.com/create-api-key",
       )}`,
     });
 
@@ -81,6 +63,7 @@ export async function createSession(cache: Cache) {
 
 export async function validateKey(apiSecretKey: string) {
   const fetch = (await import("node-fetch")).default;
+  // TODO: CHANGE THIS TO PROD BEFORE MERGING!!!
   const response = await fetch(
     `https://api.thirdweb.com/v1/keys/use?scope=storage`,
     {
@@ -101,73 +84,3 @@ export async function validateKey(apiSecretKey: string) {
     return apiSecretKey;
   }
 }
-
-type LoginProps = {
-  browser: boolean;
-};
-
-export const startServer = async (
-  props: LoginProps = { browser: true },
-  cache: Cache,
-) => {
-  const urlToOpen =
-    // "https://thirdweb.com/cli/login?from=cli";
-    // "https://thirdweb-www-git-mariano-api-keys-sign-in.thirdweb-preview.com/cli/login?from=cli";
-    "http://localhost:3000/cli/login?from=cli";
-
-  let server: http.Server;
-  let loginTimeoutHandle: NodeJS.Timeout;
-  const timerPromise = new Promise<void>((resolve, reject) => {
-    loginTimeoutHandle = setTimeout(() => {
-      logger.error("Timed out waiting for secretKey, please try again.");
-      server.close();
-      clearTimeout(loginTimeoutHandle);
-      reject(new Error("Timed out waiting for secretKey"));
-    }, 120000);
-  });
-
-  const loginPromise = new Promise<string>((resolve, reject) => {
-    server = http.createServer(async (req, res) => {
-      function finish(error?: Error) {
-        clearTimeout(loginTimeoutHandle);
-        server.close((closeErr?: Error) => {
-          if (error || closeErr) {
-            reject(error || closeErr);
-          }
-        });
-      }
-      res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-      res.setHeader("Access-Control-Allow-Methods", "GET");
-
-      assert(req.url, "This request doesn't have a URL");
-      const { pathname, query } = url.parse(req.url, true);
-      switch (pathname) {
-        case "/secretKey/callback": {
-          if (query.id) {
-            const id = Array.isArray(query.id) ? query.id[0] : query.id;
-            cache.set("api-secret-key", id);
-            res.end(() => {
-              finish();
-            });
-            logger.info(chalk.green(`Successfully logged in.`));
-            resolve(id); // resolve promise with secretKey
-          } else {
-            finish(new Error("No secretKey received"));
-          }
-        }
-      }
-    });
-
-    server.listen(8976);
-  });
-  if (props?.browser) {
-    ora(`Opening a link in your default browser: ${urlToOpen}...\n`).start();
-    setTimeout(async () => {
-      await open(urlToOpen);
-    }, 3000);
-  } else {
-    logger.info(`Visit this link to authenticate: ${urlToOpen}`);
-  }
-
-  return Promise.race([timerPromise, loginPromise]);
-};
