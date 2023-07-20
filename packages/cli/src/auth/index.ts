@@ -1,28 +1,28 @@
 import assert from "assert";
 import chalk from "chalk";
 import crypto from "crypto";
+import fs from "fs";
 import http from "http";
 import open from "open";
 import ora from "ora";
 import prompts from "prompts";
-import Cache, { CacheEntry } from "sync-disk-cache";
 import url from "url";
 import { logger } from "../core/helpers/logger";
 import { ApiResponse } from "../lib/types";
 
 export async function loginUser(
-  cache: Cache,
+  credsConfigPath: string,
   options?: { new: boolean },
   showLogs?: boolean,
 ) {
-  const keyFound = getSession(cache);
+  const keyFound = getSession(credsConfigPath);
   if (keyFound && !options?.new) {
     if (showLogs) {
       console.log(chalk.green("You are already logged in"));
     }
     return keyFound;
   } else {
-    // const apiKey = await createSession(cache);
+    // const apiKey = await createSession(credsConfigPath);
     // return apiKey;
     if (showLogs) {
       console.log(
@@ -31,7 +31,7 @@ export async function loginUser(
         ),
       );
     }
-    const apiKey = await startServer({ browser: true }, cache);
+    const apiKey = await startServer({ browser: true }, credsConfigPath);
     if (!apiKey) {
       throw new Error("Failed to login");
     }
@@ -39,25 +39,32 @@ export async function loginUser(
   }
 }
 
-export async function logoutUser(cache: Cache) {
+export async function logoutUser(credsConfigPath: string) {
   try {
-    cache.remove("api-secret-key");
+    const dirExists = fs.existsSync(credsConfigPath);
+    if (dirExists) {
+      fs.rmSync(credsConfigPath);
+    }
     console.log(chalk.green("You have been logged out"));
   } catch (error) {
     console.log(chalk.red("Something went wrong", error));
   }
 }
 
-export function getSession(cache: Cache) {
+export function getSession(credsConfigPath: string) {
   try {
-    const apiKey: CacheEntry = cache.get("api-secret-key");
-    return apiKey.value;
+    const fileExists = fs.existsSync(credsConfigPath);
+    if (!fileExists) {
+      return;
+    }
+    const apiKey = fs.readFileSync(credsConfigPath, "utf8");
+    return apiKey;
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function createSession(cache: Cache) {
+export async function createSession(credsConfigPath: string) {
   try {
     const response = await prompts({
       type: "text",
@@ -73,7 +80,10 @@ export async function createSession(cache: Cache) {
       console.log(error);
       process.exit(1);
     }
-    cache.set("api-secret-key", response.apiSecretKey);
+    fs.writeFileSync(credsConfigPath, response.apiSecretKey, {
+      encoding: "utf8",
+      mode: 0o600,
+    });
     return response.apiSecretKey;
   } catch (error) {
     console.log(error);
@@ -113,7 +123,7 @@ function generateStateParameter(length: number) {
 
 export const startServer = async (
   props: LoginProps = { browser: true },
-  cache: Cache,
+  credsConfigPath: string,
 ) => {
   const ourState = generateStateParameter(32);
   const urlToOpen =
@@ -150,7 +160,7 @@ export const startServer = async (
       switch (pathname) {
         case "/auth/callback": {
           if (query.id) {
-            const id = Array.isArray(query.id) ? query.id[0] : query.id;
+            const secretKey = Array.isArray(query.id) ? query.id[0] : query.id;
             const theirState = Array.isArray(query.state)
               ? query.state[0]
               : query.state;
@@ -163,12 +173,15 @@ export const startServer = async (
                 new Error(chalk.red("Unauthorized request, state mismatch")),
               );
             } else {
-              cache.set("api-secret-key", id);
+              fs.writeFileSync(credsConfigPath, secretKey, {
+                encoding: "utf8",
+                mode: 0o600,
+              });
               res.end(() => {
                 finish();
               });
               logger.info(chalk.green(`Successfully logged in.`));
-              resolve(id); // resolve promise with secretKey
+              resolve(secretKey); // resolve promise with secretKey
             }
           } else {
             res.writeHead(400, { "Content-Type": "text/plain" }); // send a 400 response
