@@ -24,6 +24,8 @@ import { upload } from "../storage/command";
 const main = async () => {
   // eslint-disable-next-line turbo/no-undeclared-env-vars
   const skipIntro = process.env.THIRDWEB_CLI_SKIP_INTRO === "true";
+  // const configDir = xdgAppPaths(".thirdweb").config();
+  // const cacheDir = xdgAppPaths(".thirdweb").cache();
 
   const program = new Command();
   const cache = new Cache("thirdweb:cli", {
