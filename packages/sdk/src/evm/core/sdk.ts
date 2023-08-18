@@ -117,6 +117,7 @@ import { getProcessEnv } from "../../core/utils/process";
 import { DropErc721ContractSchema } from "../schema";
 import {
   constructAbiFromBytecode,
+  getAllDetectedExtensions,
   resolveImplementationBytecode,
 } from "../common";
 
@@ -582,14 +583,17 @@ export class ThirdwebSDK extends RPCConnectionHandler {
     // we also handle it being "custom" just in case...
     if (!contractTypeOrABI || contractTypeOrABI === "custom") {
       try {
-        const metadata =
-          await this.getPublisher().fetchCompilerMetadataFromAddress(
-            resolvedAddress,
-          );
-        newContract = await this.getContractFromAbi(
+        // const metadata =
+        //   await this.getPublisher().fetchCompilerMetadataFromAddress(
+        //     resolvedAddress,
+        //   );
+        const bytecode = await resolveImplementationBytecode(
           resolvedAddress,
-          metadata.abi,
+          this.getProvider(),
         );
+        const abi = constructAbiFromBytecode(bytecode);
+        console.log("abi from bytecode", abi.length);
+        newContract = await this.getContractFromAbi(resolvedAddress, abi);
       } catch (e) {
         // try resolving the contract type (legacy contracts)
         const resolvedContractType = await this.resolveContractType(
@@ -833,10 +837,13 @@ export class ThirdwebSDK extends RPCConnectionHandler {
     );
 
     const parsedABI = typeof abi === "string" ? JSON.parse(abi) : abi;
+    const extensions = getAllDetectedExtensions(parsedABI);
     // TODO we still might want to lazy-fy this
     const contract = new SmartContract(
       this.getSignerOrProvider(),
       resolvedAddress,
+      extensions,
+      this.storageHandler,
       await getCompositePluginABI(
         resolvedAddress,
         AbiSchema.parse(parsedABI),
@@ -844,7 +851,6 @@ export class ThirdwebSDK extends RPCConnectionHandler {
         this.options,
         this.storage,
       ),
-      this.storageHandler,
       this.options,
       (await provider.getNetwork()).chainId,
     );

@@ -2,7 +2,10 @@ import { computeEOAForwarderAddress } from "../../common/any-evm-utils/computeEO
 import { computeForwarderAddress } from "../../common/any-evm-utils/computeForwarderAddress";
 import { parseRevertReason, TransactionError } from "../../common/error";
 import { extractFunctionsFromAbi } from "../../common/feature-detection/extractFunctionsFromAbi";
-import { fetchContractMetadataFromAddress } from "../../common/metadata-resolver";
+import {
+  fetchAbiFromAddress,
+  fetchContractMetadataFromAddress,
+} from "../../common/metadata-resolver";
 import { fetchSourceFilesFromMetadata } from "../../common/fetchSourceFilesFromMetadata";
 import {
   BiconomyForwarderAbi,
@@ -63,6 +66,7 @@ export class ContractWrapper<
   public writeContract;
   public readContract;
   public abi;
+  public contractAddress;
 
   constructor(
     network: NetworkInput,
@@ -73,6 +77,7 @@ export class ContractWrapper<
   ) {
     super(network, options);
     this.abi = contractAbi;
+    this.contractAddress = contractAddress;
     // set up the contract
     this.writeContract = new Contract(
       contractAddress,
@@ -84,6 +89,38 @@ export class ContractWrapper<
       this.getProvider(),
     ) as TContract;
     this.storage = storage;
+  }
+
+  public async fetchFullAbiIfNeeded() {
+    if (AbiSchema.parse(this.abi || []).length === 0) {
+      await this.fetchFullAbi();
+    }
+  }
+
+  public async fetchFullAbi() {
+    const metadata = await fetchContractMetadataFromAddress(
+      this.contractAddress,
+      this.getProvider(),
+      this.storage,
+    );
+    if (metadata.abi) {
+      this.updateAbi(AbiSchema.parse(metadata.abi));
+    }
+    return metadata.abi;
+  }
+
+  public updateAbi(abi: ContractInterface) {
+    this.abi = abi;
+    // set up the contract
+    this.writeContract = new Contract(
+      this.contractAddress,
+      abi,
+      this.getSignerOrProvider(),
+    ) as TContract;
+    // setup the read only contract
+    this.readContract = this.writeContract.connect(
+      this.getProvider(),
+    ) as TContract;
   }
 
   public override updateSignerOrProvider(network: NetworkInput): void {

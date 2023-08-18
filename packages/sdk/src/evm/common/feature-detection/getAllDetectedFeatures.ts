@@ -23,17 +23,17 @@ export function getAllDetectedFeatures(abi: AbiInput): FeatureWithEnabled[] {
 export function getAllDetectedExtensionsFromBytecode(
   bytecode: string,
 ): FeatureWithEnabled[] {
-  const features: FeatureWithEnabled[] = [];
-  extractFeatures(detectFeaturesFromBytecode(bytecode), features);
-  return features;
-}
-
-export function constructAbiFromBytecode(bytecode: string): AbiInput {
-  let extensions = getAllDetectedExtensionsFromBytecode(bytecode);
+  let extensions: FeatureWithEnabled[] = [];
+  extractFeatures(detectFeaturesFromBytecode(bytecode), extensions);
   // special deduping for ERC721 and ERC20
   if (extensions.find((f) => f.name === "ERC721")) {
     extensions = extensions.filter((f) => f.name !== "ERC20");
   }
+  return extensions;
+}
+
+export function constructAbiFromBytecode(bytecode: string): AbiInput {
+  const extensions = getAllDetectedExtensionsFromBytecode(bytecode);
   const abi = joinABIs(extensions.map((f) => joinABIs(f.abis as any)));
   return abi;
 }

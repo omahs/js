@@ -14,6 +14,7 @@ import {
 } from "./utils/cache";
 import type { ThirdwebStorage } from "@thirdweb-dev/storage";
 import type { ContractInterface } from "ethers";
+import { getAllDetectedExtensions } from "../common";
 
 export type GetContractFromAbiParams = {
   address: AddressOrEns;
@@ -40,9 +41,12 @@ export async function getContractFromAbi(
 
   const parsedAbi =
     typeof params.abi === "string" ? JSON.parse(params.abi) : params.abi;
+  const extensions = getAllDetectedExtensions(parsedAbi);
   const contract = new SmartContract(
     signer || provider,
     resolvedAddress,
+    extensions,
+    getCachedStorage(params.storage),
     await getCompositePluginABI(
       resolvedAddress,
       AbiSchema.parse(parsedAbi),
@@ -50,7 +54,6 @@ export async function getContractFromAbi(
       params.sdkOptions,
       getCachedStorage(params.storage),
     ),
-    getCachedStorage(params.storage),
     params.sdkOptions,
     chainId,
   );

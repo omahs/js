@@ -1,5 +1,8 @@
 import { assertEnabled } from "../common/feature-detection/assertEnabled";
-import { detectContractFeature } from "../common/feature-detection/detectContractFeature";
+import {
+  detectContractFeature,
+  hasExtension,
+} from "../common/feature-detection/detectContractFeature";
 import { ALL_ROLES } from "../common/role";
 import { FEATURE_TOKEN } from "../constants/erc20-features";
 import { FEATURE_NFT } from "../constants/erc721-features";
@@ -68,6 +71,7 @@ import { MarketplaceV3EnglishAuctions } from "../core/classes/marketplacev3-engl
 import { MarketplaceV3Offers } from "../core/classes/marketplacev3-offers";
 import { AccountFactory } from "../core/classes/account-factory";
 import { Account } from "../core/classes/account";
+import { ExtensionWithEnabled } from "../constants";
 
 /**
  * Custom contract dynamic class with feature detection
@@ -108,8 +112,11 @@ export class SmartContract<
   public encoder: ContractEncoder<TContract>;
   public estimator: GasCostEstimator<TContract>;
   public publishedMetadata: ContractPublishedMetadata<TContract>;
-  public abi: Abi;
   public metadata: ContractMetadata<BaseContract, typeof CustomContractSchema>;
+  public extensions: ExtensionWithEnabled[];
+  get abi(): Abi {
+    return AbiSchema.parse(this.contractWrapper.abi || []);
+  }
 
   /**
    * Handle royalties
@@ -343,8 +350,9 @@ export class SmartContract<
   constructor(
     network: NetworkInput,
     address: string,
-    abi: AbiInput,
+    extensions: ExtensionWithEnabled[],
     storage: ThirdwebStorage,
+    abi: AbiInput = [],
     options: SDKOptions = {},
     chainId: number,
     contractWrapper = new ContractWrapper<TContract>(
@@ -358,7 +366,7 @@ export class SmartContract<
     this._chainId = chainId;
     this.storage = storage;
     this.contractWrapper = contractWrapper;
-    this.abi = AbiSchema.parse(abi || []);
+    this.extensions = extensions;
 
     this.events = new ContractEvents(this.contractWrapper);
     this.encoder = new ContractEncoder(this.contractWrapper);
@@ -374,6 +382,8 @@ export class SmartContract<
       CustomContractSchema,
       this.storage,
     );
+    // TODO fire and forget fetchFullAbiIfNeeded
+    // this.contractWrapper.fetchFullAbiIfNeeded();
   }
 
   onNetworkUpdated(network: NetworkInput): void {
@@ -387,13 +397,14 @@ export class SmartContract<
   /**
    * Prepare a transaction for sending
    */
-  public prepare<
+  public async prepare<
     TMethod extends keyof TContract["functions"] = keyof TContract["functions"],
   >(
     method: string & TMethod,
     args: any[] & Parameters<TContract["functions"][TMethod]>,
     overrides?: CallOverrides,
   ) {
+    await this.contractWrapper.fetchFullAbiIfNeeded();
     return Transaction.fromContractWrapper({
       contractWrapper: this.contractWrapper,
       method,
@@ -430,6 +441,7 @@ export class SmartContract<
     args?: Parameters<TContract["functions"][TMethod]>,
     overrides?: CallOverrides,
   ): Promise<ReturnType<TContract["functions"][TMethod]>> {
+    await this.contractWrapper.fetchFullAbiIfNeeded();
     return this.contractWrapper.call(functionName, args, overrides);
   }
 
@@ -438,7 +450,9 @@ export class SmartContract<
    * ********************/
 
   private detectRoyalties() {
-    if (detectContractFeature<IRoyalty>(this.contractWrapper, "Royalty")) {
+    if (
+      hasExtension<IRoyalty>(this.contractWrapper, this.extensions, "Royalty")
+    ) {
       // ContractMetadata is stateless, it's fine to create a new one here
       // This also makes it not order dependent in the feature detection process
       const metadata = new ContractMetadata(
@@ -453,7 +467,11 @@ export class SmartContract<
 
   private detectRoles() {
     if (
-      detectContractFeature<IPermissions>(this.contractWrapper, "Permissions")
+      hasExtension<IPermissions>(
+        this.contractWrapper,
+        this.extensions,
+        "Permissions",
+      )
     ) {
       return new ContractRoles(this.contractWrapper, ALL_ROLES);
     }
@@ -462,7 +480,11 @@ export class SmartContract<
 
   private detectPrimarySales() {
     if (
-      detectContractFeature<IPrimarySale>(this.contractWrapper, "PrimarySale")
+      hasExtension<IPrimarySale>(
+        this.contractWrapper,
+        this.extensions,
+        "PrimarySale",
+      )
     ) {
       return new ContractPrimarySale(this.contractWrapper);
     }
@@ -471,7 +493,11 @@ export class SmartContract<
 
   private detectPlatformFees() {
     if (
-      detectContractFeature<IPlatformFee>(this.contractWrapper, "PlatformFee")
+      hasExtension<IPlatformFee>(
+        this.contractWrapper,
+        this.extensions,
+        "PlatformFee",
+      )
     ) {
       return new ContractPlatformFee(this.contractWrapper);
     }
@@ -479,28 +505,40 @@ export class SmartContract<
   }
 
   private detectErc20() {
-    if (detectContractFeature<BaseERC20>(this.contractWrapper, "ERC20")) {
+    if (
+      hasExtension<BaseERC20>(this.contractWrapper, this.extensions, "ERC20")
+    ) {
       return new Erc20(this.contractWrapper, this.storage, this.chainId);
     }
     return undefined;
   }
 
   private detectErc721() {
-    if (detectContractFeature<BaseERC721>(this.contractWrapper, "ERC721")) {
+    if (
+      hasExtension<BaseERC721>(this.contractWrapper, this.extensions, "ERC721")
+    ) {
       return new Erc721(this.contractWrapper, this.storage, this.chainId);
     }
     return undefined;
   }
 
   private detectErc1155() {
-    if (detectContractFeature<BaseERC1155>(this.contractWrapper, "ERC1155")) {
+    if (
+      hasExtension<BaseERC1155>(
+        this.contractWrapper,
+        this.extensions,
+        "ERC1155",
+      )
+    ) {
       return new Erc1155(this.contractWrapper, this.storage, this.chainId);
     }
     return undefined;
   }
 
   private detectOwnable() {
-    if (detectContractFeature<Ownable>(this.contractWrapper, "Ownable")) {
+    if (
+      hasExtension<Ownable>(this.contractWrapper, this.extensions, "Ownable")
+    ) {
       return new ContractOwner(this.contractWrapper);
     }
     return undefined;
@@ -513,11 +551,14 @@ export class SmartContract<
       this.storage,
     );
 
-    if (detectContractFeature<IAppURI>(this.contractWrapper, "AppURI")) {
+    if (
+      hasExtension<IAppURI>(this.contractWrapper, this.extensions, "AppURI")
+    ) {
       return new ContractAppURI(this.contractWrapper, metadata, this.storage);
     } else if (
-      detectContractFeature<IContractMetadata>(
+      hasExtension<IContractMetadata>(
         this.contractWrapper,
+        this.extensions,
         "ContractMetadata",
       )
     ) {
@@ -528,8 +569,9 @@ export class SmartContract<
 
   private detectDirectListings() {
     if (
-      detectContractFeature<DirectListingsLogic>(
+      hasExtension<DirectListingsLogic>(
         this.contractWrapper,
+        this.extensions,
         "DirectListings",
       )
     ) {
@@ -543,8 +585,9 @@ export class SmartContract<
 
   private detectEnglishAuctions() {
     if (
-      detectContractFeature<EnglishAuctionsLogic>(
+      hasExtension<EnglishAuctionsLogic>(
         this.contractWrapper,
+        this.extensions,
         "EnglishAuctions",
       )
     ) {
@@ -557,7 +600,9 @@ export class SmartContract<
   }
 
   private detectOffers() {
-    if (detectContractFeature<OffersLogic>(this.contractWrapper, "Offers")) {
+    if (
+      hasExtension<OffersLogic>(this.contractWrapper, this.extensions, "Offers")
+    ) {
       return new MarketplaceV3Offers(this.contractWrapper, this.storage);
     }
     return undefined;
@@ -567,8 +612,9 @@ export class SmartContract<
 
   private detectAccountFactory() {
     if (
-      detectContractFeature<IAccountFactory>(
+      hasExtension<IAccountFactory>(
         this.contractWrapper,
+        this.extensions,
         FEATURE_ACCOUNT_FACTORY.name,
       )
     ) {
@@ -579,8 +625,9 @@ export class SmartContract<
 
   private detectAccount() {
     if (
-      detectContractFeature<IAccountCore>(
+      hasExtension<IAccountCore>(
         this.contractWrapper,
+        this.extensions,
         FEATURE_ACCOUNT.name,
       )
     ) {
