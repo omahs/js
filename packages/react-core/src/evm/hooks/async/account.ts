@@ -189,3 +189,137 @@ export function useSetAccountSigners(
     },
   );
 }
+
+/**
+ * Add a signer to the account
+ *
+ * @example
+ * ```jsx
+ * const Component = () => {
+ *   const { contract } = useContract("{{contract_address}}");
+ *   const {
+ *     mutate: addAccountSigner,
+ *     isLoading,
+ *     error,
+ *   } = useAddAccountSigner(contract);
+ *
+ *   if (error) {
+ *     console.error("failed to set account signers", error);
+ *   }
+ *
+ *   return (
+ *     <button
+ *       disabled={isLoading}
+ *       onClick={() => addAccountSigner("0x...")}
+ *     >
+ *       Add an Account Signer
+ *     </button>
+ *   );
+ * };
+ * ```
+ *
+ * @param contract - an instance of a account contract
+ * @returns a mutation object that can be used to set the account signers
+ * @twfeature Account
+ * @see {@link https://portal.thirdweb.com/react/react.usesetaccountsigners?utm_source=sdk | Documentation}
+ * @beta
+ */
+
+export function useAddAccountSigner(
+  contract: RequiredParam<SmartContract>,
+  permissions: {
+    approvedCallTargets: string[];
+    startDate?: number | Date | undefined;
+    expirationDate?: number | Date | undefined;
+    nativeTokenLimitPerTransaction?: string;
+  },
+): UseMutationResult<
+  { receipt: providers.TransactionReceipt },
+  unknown,
+  WalletAddress,
+  unknown
+> {
+  const activeChainId = useSDKChainId();
+  const contractAddress = contract?.getAddress();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (signer: WalletAddress) => {
+      requiredParamInvariant(contract, "contract is undefined");
+
+      return contract.account.grantPermissions(signer, permissions);
+    },
+    {
+      onSettled: () =>
+        invalidateContractAndBalances(
+          queryClient,
+          contractAddress,
+          activeChainId,
+        ),
+    },
+  );
+}
+
+/**
+ * Remove a signer from the account
+ *
+ * @example
+ * ```jsx
+ * const Component = () => {
+ *   const { contract } = useContract("{{contract_address}}");
+ *   const {
+ *     mutate: removeAccountSigner,
+ *     isLoading,
+ *     error,
+ *   } = useRemoveAccountSigner(contract);
+ *
+ *   if (error) {
+ *     console.error("failed to remove account signers", error);
+ *   }
+ *
+ *   return (
+ *     <button
+ *       disabled={isLoading}
+ *       onClick={() => removeAccountSigner("0x...")}
+ *     >
+ *       Remove an Account Signer
+ *     </button>
+ *   );
+ * };
+ * ```
+ *
+ * @param contract - an instance of a account contract
+ * @returns a mutation object that can be used to remove the account signer
+ * @twfeature Account
+ * @see {@link https://portal.thirdweb.com/react/react.usesetaccountsigners?utm_source=sdk | Documentation}
+ * @beta
+ */
+
+export function useRemoveAccountSigner(
+  contract: RequiredParam<SmartContract>,
+): UseMutationResult<
+  { receipt: providers.TransactionReceipt },
+  unknown,
+  WalletAddress,
+  unknown
+> {
+  const activeChainId = useSDKChainId();
+  const contractAddress = contract?.getAddress();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (signer: WalletAddress) => {
+      requiredParamInvariant(contract, "contract is undefined");
+
+      return contract.account.revokePermissions(signer);
+    },
+    {
+      onSettled: () =>
+        invalidateContractAndBalances(
+          queryClient,
+          contractAddress,
+          activeChainId,
+        ),
+    },
+  );
+}
