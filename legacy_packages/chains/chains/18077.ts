@@ -1,14 +1,8 @@
 import type { Chain } from "../src/types";
 export default {
   "chain": "Avalanche",
-  "chainId": 987,
-  "explorers": [
-    {
-      "name": "BinaryChain Explorer",
-      "url": "https://explorer.binarychain.org",
-      "standard": "EIP3091"
-    }
-  ],
+  "chainId": 18077,
+  "explorers": [],
   "faucets": [],
   "features": [],
   "icon": {
@@ -18,20 +12,19 @@ export default {
     "format": "svg"
   },
   "infoURL": "https://avacloud.io",
-  "name": "Orange Testnet",
+  "name": "PlayGround",
   "nativeCurrency": {
-    "name": "Orange Testnet Token",
-    "symbol": "JUICE",
+    "name": "PlayGround Token",
+    "symbol": "PG",
     "decimals": 18
   },
-  "networkId": 987,
+  "networkId": 18077,
   "redFlags": [],
   "rpc": [
-    "https://987.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://subnets.avax.network/orangetest/testnet/rpc",
-    "https://rpc.binarychain.org"
+    "https://18077.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
+    "https://subnets.avax.network/playground/testnet/rpc"
   ],
-  "shortName": "Orange Testnet",
-  "slug": "orange-testnet",
+  "shortName": "PlayGround",
+  "slug": "playground",
   "testnet": true
 } as const satisfies Chain;

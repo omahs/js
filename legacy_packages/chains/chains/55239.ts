@@ -1,14 +1,8 @@
 import type { Chain } from "../src/types";
 export default {
   "chain": "Avalanche",
-  "chainId": 987,
-  "explorers": [
-    {
-      "name": "BinaryChain Explorer",
-      "url": "https://explorer.binarychain.org",
-      "standard": "EIP3091"
-    }
-  ],
+  "chainId": 55239,
+  "explorers": [],
   "faucets": [],
   "features": [],
   "icon": {
@@ -18,20 +12,19 @@ export default {
     "format": "svg"
   },
   "infoURL": "https://avacloud.io",
-  "name": "Orange Testnet",
+  "name": "Borne",
   "nativeCurrency": {
-    "name": "Orange Testnet Token",
-    "symbol": "JUICE",
+    "name": "Borne Token",
+    "symbol": "BORNE",
     "decimals": 18
   },
-  "networkId": 987,
+  "networkId": 55239,
   "redFlags": [],
   "rpc": [
-    "https://987.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://subnets.avax.network/orangetest/testnet/rpc",
-    "https://rpc.binarychain.org"
+    "https://55239.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
+    "https://testnet-bornefdn-w00dd.avax-test.network/ext/bc/28ACsxrnCZoTyUGTgrHxeht4WugDsW9jwdADNFDSBZivaVMxS6/rpc?token=6228963b69d441e8881b5db9611f41e1aec0c0bb0b4b979a7dc6926d2743c18c"
   ],
-  "shortName": "Orange Testnet",
-  "slug": "orange-testnet",
+  "shortName": "Borne",
+  "slug": "borne",
   "testnet": true
 } as const satisfies Chain;

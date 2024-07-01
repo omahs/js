@@ -1,11 +1,11 @@
 import type { Chain } from "../src/types";
 export default {
-  "chain": "LPC",
-  "chainId": 175177,
+  "chain": "LPV",
+  "chainId": 2311,
   "explorers": [
     {
-      "name": "Lit Chronicle Explorer",
-      "url": "https://chain.litprotocol.com",
+      "name": "Lit Vesuvius Explorer",
+      "url": "https://vesuvius-explorer.litprotocol.com",
       "standard": "EIP3091",
       "icon": {
         "url": "ipfs://QmXZcwET1LhUxfc2mCdiCJFm61jUHsVVXuZYwx8zhvHQxn",
@@ -15,9 +15,7 @@ export default {
       }
     }
   ],
-  "faucets": [
-    "https://faucet.litprotocol.com"
-  ],
+  "faucets": [],
   "features": [],
   "icon": {
     "url": "ipfs://QmXZcwET1LhUxfc2mCdiCJFm61jUHsVVXuZYwx8zhvHQxn",
@@ -25,20 +23,20 @@ export default {
     "height": 164,
     "format": "png"
   },
-  "infoURL": "https://developer.litprotocol.com/v3/network/rollup",
-  "name": "Chronicle - Lit Protocol Testnet",
+  "infoURL": "https://litprotocol.com",
+  "name": "Vesuvius - Lit Protocol Testnet",
   "nativeCurrency": {
-    "name": "Test LIT",
-    "symbol": "tstLIT",
+    "name": "Test LPX",
+    "symbol": "tstLPX",
     "decimals": 18
   },
-  "networkId": 175177,
+  "networkId": 2311,
   "redFlags": [],
   "rpc": [
-    "https://175177.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://chain-rpc.litprotocol.com/http"
+    "https://2311.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
+    "https://vesuvius-rpc.litprotocol.com"
   ],
-  "shortName": "lpc",
-  "slug": "chronicle-lit-protocol-testnet",
+  "shortName": "lpv",
+  "slug": "vesuvius-lit-protocol-testnet",
   "testnet": true
 } as const satisfies Chain;
