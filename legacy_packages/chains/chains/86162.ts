@@ -1,14 +1,8 @@
 import type { Chain } from "../src/types";
 export default {
   "chain": "Avalanche",
-  "chainId": 987,
-  "explorers": [
-    {
-      "name": "BinaryChain Explorer",
-      "url": "https://explorer.binarychain.org",
-      "standard": "EIP3091"
-    }
-  ],
+  "chainId": 86162,
+  "explorers": [],
   "faucets": [],
   "features": [],
   "icon": {
@@ -18,20 +12,19 @@ export default {
     "format": "svg"
   },
   "infoURL": "https://avacloud.io",
-  "name": "Orange Testnet",
+  "name": "Apiary",
   "nativeCurrency": {
-    "name": "Orange Testnet Token",
-    "symbol": "JUICE",
+    "name": "Apiary Token",
+    "symbol": "APIARY",
     "decimals": 18
   },
-  "networkId": 987,
+  "networkId": 86162,
   "redFlags": [],
   "rpc": [
-    "https://987.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://subnets.avax.network/orangetest/testnet/rpc",
-    "https://rpc.binarychain.org"
+    "https://86162.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
+    "https://testnet-apiary-yfd1b.avax-test.network/ext/bc/cfGi1UzcKyVJuJki7dY495hKCXSH9wuyvV1EsD5CT63FLDu3f/rpc?token=0d7db5569e966aa69a6546107e69278f45a53068a5227fa48ba8485ffe629568"
   ],
-  "shortName": "Orange Testnet",
-  "slug": "orange-testnet",
+  "shortName": "Apiary",
+  "slug": "apiary",
   "testnet": true
 } as const satisfies Chain;

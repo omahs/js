@@ -1,14 +1,8 @@
 import type { Chain } from "../src/types";
 export default {
   "chain": "Avalanche",
-  "chainId": 987,
-  "explorers": [
-    {
-      "name": "BinaryChain Explorer",
-      "url": "https://explorer.binarychain.org",
-      "standard": "EIP3091"
-    }
-  ],
+  "chainId": 954958,
+  "explorers": [],
   "faucets": [],
   "features": [],
   "icon": {
@@ -18,20 +12,19 @@ export default {
     "format": "svg"
   },
   "infoURL": "https://avacloud.io",
-  "name": "Orange Testnet",
+  "name": "QA0621T1TS",
   "nativeCurrency": {
-    "name": "Orange Testnet Token",
-    "symbol": "JUICE",
+    "name": "QA0621T1TS Token",
+    "symbol": "FNF",
     "decimals": 18
   },
-  "networkId": 987,
+  "networkId": 954958,
   "redFlags": [],
   "rpc": [
-    "https://987.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://subnets.avax.network/orangetest/testnet/rpc",
-    "https://rpc.binarychain.org"
+    "https://954958.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
+    "https://testnet-qa0621t1ts-z3001.avax-test.network/ext/bc/TXRuQxeHnyh6CGR6DgLdC5s2WSiHF3a5pK2DEurPaVjgzxshD/rpc?token=18a44f4988cdf732a71dc730f51e89eedade77024c23618cbd89e04779a078b9"
   ],
-  "shortName": "Orange Testnet",
-  "slug": "orange-testnet",
+  "shortName": "QA0621T1TS",
+  "slug": "qa0621t1ts",
   "testnet": true
 } as const satisfies Chain;
