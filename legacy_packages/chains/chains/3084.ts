@@ -2,9 +2,19 @@ import type { Chain } from "../src/types";
 export default {
   "chain": "Avalanche",
   "chainId": 3084,
-  "explorers": [],
+  "explorers": [
+    {
+      "name": "XL Network Explorer",
+      "url": "https://subnets-test.avax.network/xlnetworkt",
+      "standard": "EIP3091"
+    }
+  ],
   "faucets": [],
-  "features": [],
+  "features": [
+    {
+      "name": "EIP1559"
+    }
+  ],
   "icon": {
     "url": "https://images.ctfassets.net/9bazykntljf6/62CceHSYsRS4D9fgDSkLRB/877cb8f26954e1743ff535fd7fdaf78f/avacloud-placeholder.svg",
     "width": 256,
@@ -22,7 +32,8 @@ export default {
   "redFlags": [],
   "rpc": [
     "https://3084.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://subnets.avax.network/xlnetworkt/testnet/rpc"
+    "https://subnets.avax.network/xlnetworkt/testnet/rpc",
+    "wss://subnets.avax.network/xlnetworkt/testnet/ws"
   ],
   "shortName": "XL Network Testnet",
   "slug": "xl-network-testnet",

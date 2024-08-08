@@ -4,18 +4,8 @@ export default {
   "chainId": 164,
   "explorers": [
     {
-      "name": "Omni X-Explorer",
-      "url": "https://explorer.testnet.omni.network",
-      "standard": "none"
-    },
-    {
-      "name": "Omni EVM Explorer on Blockscout",
-      "url": "https://omni-testnet.blockscout.com",
-      "standard": "EIP3091"
-    },
-    {
-      "name": "Omni EVM Explorer on Routescan",
-      "url": "https://testnet.omniscan.network",
+      "name": "Omni EVM and cross-chain Explorer",
+      "url": "https://omega.omniscan.network",
       "standard": "EIP3091"
     }
   ],
@@ -26,7 +16,7 @@ export default {
     }
   ],
   "infoURL": "https://docs.omni.network",
-  "name": "Omni Testnet",
+  "name": "Omni Omega",
   "nativeCurrency": {
     "name": "Omni",
     "symbol": "OMNI",
@@ -35,11 +25,11 @@ export default {
   "networkId": 164,
   "rpc": [
     "https://164.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://testnet.omni.network"
+    "https://omega.omni.network"
   ],
-  "shortName": "omni_testnet",
+  "shortName": "omni_omega",
   "slip44": 1,
-  "slug": "omni-testnet",
+  "slug": "omni-omega",
   "status": "active",
-  "testnet": true
+  "testnet": false
 } as const satisfies Chain;

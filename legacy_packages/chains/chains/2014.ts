@@ -5,11 +5,13 @@ export default {
   "explorers": [
     {
       "name": "nowscan",
-      "url": "https://nowscan.io",
+      "url": "https://testnet.nowscan.io",
       "standard": "EIP3091"
     }
   ],
-  "faucets": [],
+  "faucets": [
+    "https://faucet.nowchain.co"
+  ],
   "icon": {
     "url": "ipfs://QmSUzhRGzMyMyGwBcE3ooZ5jvHKyJ1FjVjh5SfoGHG36MX",
     "width": 512,
@@ -17,7 +19,7 @@ export default {
     "format": "png"
   },
   "infoURL": "https://nowchain.co",
-  "name": "NOW Chain",
+  "name": "NOW Chain Testnet",
   "nativeCurrency": {
     "name": "NOW Coin",
     "symbol": "NOW",
@@ -26,9 +28,9 @@ export default {
   "networkId": 2014,
   "rpc": [
     "https://2014.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://rpc.nowscan.io"
+    "https://rpc-testnet.nowscan.io"
   ],
   "shortName": "now",
-  "slug": "now-chain",
-  "testnet": false
+  "slug": "now-chain-testnet",
+  "testnet": true
 } as const satisfies Chain;

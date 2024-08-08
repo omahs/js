@@ -1,6 +1,6 @@
 import type { Chain } from "../src/types";
 export default {
-  "chain": "KLAY",
+  "chain": "KAIA",
   "chainId": 1001,
   "explorers": [
     {
@@ -15,25 +15,24 @@ export default {
     }
   ],
   "faucets": [
-    "https://baobab.wallet.klaytn.com/access?next=faucet"
+    "https://faucet.kaia.io"
   ],
   "features": [],
-  "infoURL": "https://klaytn.foundation",
-  "name": "Klaytn Testnet Baobab",
+  "infoURL": "https://kaia.io/",
+  "name": "Kaia Testnet Kairos",
   "nativeCurrency": {
-    "name": "KLAY",
-    "symbol": "KLAY",
+    "name": "KAIA",
+    "symbol": "KAIA",
     "decimals": 18
   },
   "networkId": 1001,
   "redFlags": [],
   "rpc": [
     "https://1001.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://public-en-baobab.klaytn.net",
-    "https://api.baobab.klaytn.net:8651"
+    "https://public-en.kairos.node.kaia.io"
   ],
-  "shortName": "Baobab",
+  "shortName": "kaia-kairos",
   "slip44": 1,
-  "slug": "klaytn-testnet-baobab",
+  "slug": "kaia-testnet-kairos",
   "testnet": true
 } as const satisfies Chain;

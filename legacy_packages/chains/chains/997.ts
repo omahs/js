@@ -1,6 +1,6 @@
 import type { Chain } from "../src/types";
 export default {
-  "chain": "5ireChain",
+  "chain": "5ireChain Testnet",
   "chainId": 997,
   "explorers": [
     {
@@ -27,8 +27,8 @@ export default {
   "infoURL": "https://5ire.org",
   "name": "5ireChain Thunder",
   "nativeCurrency": {
-    "name": "5ire Token",
-    "symbol": "5ire",
+    "name": "5ire Testnet Token",
+    "symbol": "T5IRE",
     "decimals": 18
   },
   "networkId": 997,
@@ -36,7 +36,7 @@ export default {
     "https://997.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
     "https://rpc-testnet.5ire.network"
   ],
-  "shortName": "5ire",
+  "shortName": "T5ire",
   "slug": "5irechain-thunder",
   "testnet": true
 } as const satisfies Chain;

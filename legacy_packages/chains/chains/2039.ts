@@ -13,9 +13,23 @@ export default {
         "height": 303,
         "format": "png"
       }
+    },
+    {
+      "name": "Aleph Zero Testnet Explorer",
+      "url": "https://aleph-zero.blockscout.com/",
+      "standard": "EIP3091",
+      "icon": {
+        "url": "ipfs://QmbeSYW2c5pXAyEUzj8UFRdJhp5oMQzRMPqAsxJAqbGiem",
+        "width": 317,
+        "height": 303,
+        "format": "png"
+      }
     }
   ],
-  "faucets": [],
+  "faucets": [
+    "https://faucet.test.azero.dev/"
+  ],
+  "features": [],
   "icon": {
     "url": "ipfs://QmbeSYW2c5pXAyEUzj8UFRdJhp5oMQzRMPqAsxJAqbGiem",
     "width": 317,
@@ -30,6 +44,7 @@ export default {
     "decimals": 18
   },
   "networkId": 2039,
+  "redFlags": [],
   "rpc": [
     "https://2039.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
     "https://rpc.alephzero-testnet.gelato.digital",

@@ -2,7 +2,19 @@ import type { Chain } from "../src/types";
 export default {
   "chain": "fuse",
   "chainId": 123,
-  "explorers": [],
+  "explorers": [
+    {
+      "name": "Blockscout",
+      "url": "https://explorer.fusespark.io/",
+      "standard": "EIP3091",
+      "icon": {
+        "url": "ipfs://QmQg8aqyeaMfHvjzFDtZkb8dUNRYhFezPp8UYVc1HnLpRW/green.png",
+        "width": 512,
+        "height": 512,
+        "format": "png"
+      }
+    }
+  ],
   "faucets": [
     "https://get.fusespark.io"
   ],

@@ -35,7 +35,7 @@ export default {
   "rpc": [
     "https://8899.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
     "https://rpc-l1.jibchain.net",
-    "https://jib-rpc.inan.in.th"
+    "https://rpc-l1.inan.in.th"
   ],
   "shortName": "jbc",
   "slug": "jibchain-l1",

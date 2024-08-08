@@ -20,7 +20,7 @@ export default {
   "networkId": 28872323069,
   "rpc": [
     "https://28872323069.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
-    "https://gitswarm.com:2096"
+    "https://testnet.gitswarm.com:2096"
   ],
   "shortName": "GS-ETH",
   "slip44": 1,

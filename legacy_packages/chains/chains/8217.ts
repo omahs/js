@@ -1,6 +1,6 @@
 import type { Chain } from "../src/types";
 export default {
-  "chain": "KLAY",
+  "chain": "KAIA",
   "chainId": 8217,
   "explorers": [
     {
@@ -27,11 +27,11 @@ export default {
     "height": 1000,
     "format": "png"
   },
-  "infoURL": "https://klaytn.foundation",
-  "name": "Klaytn Mainnet Cypress",
+  "infoURL": "https://kaia.io",
+  "name": "Kaia Mainnet",
   "nativeCurrency": {
-    "name": "KLAY",
-    "symbol": "KLAY",
+    "name": "KAIA",
+    "symbol": "KAIA",
     "decimals": 18
   },
   "networkId": 8217,
@@ -42,8 +42,8 @@ export default {
     "https://klaytn-mainnet-rpc.allthatnode.com:8551",
     "https://klaytn.blockpi.network/v1/rpc/public"
   ],
-  "shortName": "Cypress",
+  "shortName": "kaia-mainnet",
   "slip44": 8217,
-  "slug": "klaytn-cypress",
+  "slug": "kaia",
   "testnet": false
 } as const satisfies Chain;

@@ -36,7 +36,8 @@ export default {
   "rpc": [
     "https://81.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
     "https://rpc-1.japanopenchain.org:8545",
-    "https://rpc-2.japanopenchain.org:8545"
+    "https://rpc-2.japanopenchain.org:8545",
+    "https://rpc-3.japanopenchain.org"
   ],
   "shortName": "joc",
   "slug": "japan-open-chain",
