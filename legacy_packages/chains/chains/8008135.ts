@@ -28,11 +28,12 @@ export default {
     "decimals": 18
   },
   "networkId": 8008135,
+  "redFlags": [],
   "rpc": [
     "https://8008135.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
     "https://api.helium.fhenix.zone"
   ],
   "shortName": "fhe-helium",
   "slug": "fhenix-helium",
-  "testnet": false
+  "testnet": true
 } as const satisfies Chain;

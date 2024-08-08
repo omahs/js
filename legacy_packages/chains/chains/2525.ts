@@ -2,8 +2,15 @@ import type { Chain } from "../src/types";
 export default {
   "chain": "inEVM",
   "chainId": 2525,
-  "explorers": [],
+  "explorers": [
+    {
+      "name": "blockscout",
+      "url": "https://explorer.inevm.com/",
+      "standard": "EIP3091"
+    }
+  ],
   "faucets": [],
+  "features": [],
   "icon": {
     "url": "ipfs://QmU9KU1qgReJR7vyVxN5zwWB3nkhSs658ViArUjT7GCh4r",
     "width": 2000,
@@ -18,6 +25,7 @@ export default {
     "decimals": 18
   },
   "networkId": 2525,
+  "redFlags": [],
   "rpc": [
     "https://2525.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
     "https://mainnet.rpc.inevm.com/http"

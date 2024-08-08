@@ -21,7 +21,8 @@ export default {
   "rpc": [
     "https://10081.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
     "https://rpc-1.testnet.japanopenchain.org:8545",
-    "https://rpc-2.testnet.japanopenchain.org:8545"
+    "https://rpc-2.testnet.japanopenchain.org:8545",
+    "https://rpc-3.testnet.japanopenchain.org"
   ],
   "shortName": "joct",
   "slip44": 1,

@@ -44,6 +44,8 @@ export default {
   },
   "rpc": [
     "https://111188.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
+    "https://tangible-real.gateway.tenderly.co",
+    "wss://tangible-real.gateway.tenderly.co",
     "https://real.drpc.org",
     "wss://real.drpc.org"
   ],

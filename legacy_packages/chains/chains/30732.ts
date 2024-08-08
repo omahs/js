@@ -5,7 +5,7 @@ export default {
   "explorers": [
     {
       "name": "mevm explorer",
-      "url": "https://explorer.movementlabs.xyz",
+      "url": "https://explorer.testnet.imola.movementlabs.xyz",
       "standard": "none"
     }
   ],
@@ -24,7 +24,10 @@ export default {
     "decimals": 18
   },
   "networkId": 30732,
-  "rpc": [],
+  "rpc": [
+    "https://30732.rpc.thirdweb.com/${THIRDWEB_API_KEY}",
+    "https://mevm.testnet.imola.movementlabs.xyz"
+  ],
   "shortName": "movetest",
   "slug": "movement-evm-testnet",
   "status": "incubating",
